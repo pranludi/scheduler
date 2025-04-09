@@ -1,6 +1,11 @@
 spring:
   application:
     name: scheduler
+  batch:
+    job:
+      enabled: true
+    jdbc:
+      initialize-schema: always
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/batch?serverTimezone=UTC
@@ -12,14 +17,6 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
-  quartz:
-    job-store-type: jdbc
-    properties:
-      org.quartz.scheduler.instanceId: AUTO
-      org.quartz.jobStore.isClustered: true
-      org.quartz.jobStore.clusterCheckinInterval: 20000
-    jdbc:
-      initialize-schema: always
 
 logging:
   level:
