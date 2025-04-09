@@ -2,8 +2,8 @@ package io.pranludi.scheduler.quartz.config;
 
 import io.pranludi.scheduler.quartz.job.SampleJob;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Properties;
-import org.quartz.Trigger;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -36,11 +36,7 @@ public class QuartzConfig {
         schedulerFactoryBean.setQuartzProperties(properties());
 
         // 스케줄링을 위한 Trigger 등록
-        schedulerFactoryBean.setTriggers(
-            new Trigger[]{
-                simpleTriggerFactoryBean().getObject()
-            }
-        );
+        schedulerFactoryBean.setTriggers(simpleTriggerFactoryBean().getObject());
 
         return schedulerFactoryBean;
     }
@@ -62,7 +58,7 @@ public class QuartzConfig {
     @Bean
     public SimpleTriggerFactoryBean simpleTriggerFactoryBean() {
         SimpleTriggerFactoryBean simpleTriggerFactoryBean = new SimpleTriggerFactoryBean();
-        simpleTriggerFactoryBean.setJobDetail(jobDetailFactoryBean().getObject());
+        simpleTriggerFactoryBean.setJobDetail(Objects.requireNonNull(jobDetailFactoryBean().getObject()));
         // 5초 간격으로 스케줄링 처리
         simpleTriggerFactoryBean.setRepeatInterval(5000);
         // 식별을 위한 Identity 등록 (group)
