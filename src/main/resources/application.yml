@@ -3,9 +3,9 @@ spring:
     name: scheduler
   batch:
     job:
-      enabled: true
+      enabled: false
     jdbc:
-      initialize-schema: always
+      initialize-schema: never
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/batch?serverTimezone=UTC
@@ -15,8 +15,44 @@ spring:
       maximum-pool-size: 40
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     show-sql: true
+  quartz:
+    scheduler-name: quartzScheduler
+    auto-startup: true
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: always
+    properties:
+      org:
+        quartz:
+          scheduler:
+            # 스케줄러의 이름을 지정. 클러스터링 시 각 인스턴스가 고유한 이름을 가질 수 있도록 설정.
+            instanceName: TestQuartzScheduler
+            # 스케줄러 인스턴스의 고유 ID. 'AUTO'로 설정하면 Quartz가 자동으로 각 인스턴스에 고유 ID를 할당함.
+            instanceId: AUTO
+          jobStore:
+            # Quartz에서 사용하는 JobStore 클래스를 지정.
+            # - JobStoreTX는 트랜잭션을 지원하는 데이터베이스 기반 JobStore로, 스케줄 정보가 데이터베이스에 저장됨.
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            # 사용하는 DB의 JDBC 드라이버에 맞는 Delegate 클래스를 지정.
+            # 기본적으로 표준 JDBC를 사용하며, 데이터베이스에 맞는 Delegate를 지정해야 할 수도 있음 (예: MySQL, PostgreSQL 등).
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            # Quartz에서 사용할 데이터소스 지정.
+            dataSource: batchDataSource
+            # 데이터베이스 테이블의 이름에 사용할 접두어.
+            tablePrefix: QRTZ_
+            # Quartz가 클러스터 모드에서 실행될지 여부.
+            # - true로 설정하면 여러 노드에서 스케줄러를 실행할 수 있고, 하나의 잡을 여러 인스턴스에서 동시에 실행하지 않도록 조율.
+            # - false로 설정하면 단일 노드에서만 실행됨.
+            isClustered: true
+          threadPool:
+            # Quartz가 사용할 스레드 수를 지정. 잡을 처리할 때 동시에 실행할 수 있는 스레드의 수.
+            threadCount: 2
+          dataSource:
+            url: jdbc:log4jdbc:mysql://127.0.0.1:43306/TESTDB?allowMultiQueries=true
+            username: root
+            password: 1234
 
 logging:
   level:
